@@ -1,44 +1,40 @@
 import React, { useState } from "react";
-import { loginUser } from "../services/authService"; // Import logic dummy tadi
 import { Gem, Mail, Lock, Loader2, ArrowLeft } from "lucide-react";
+import { useAuthLogin } from "../hooks/useAuthLogin";
 
-const LoginPage = ({ onBack }) => {
-  const [email, setEmail] = useState("");
+const LoginPage = ({ onBack, onLoginSuccess }) => {
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+
+  // ✅ cukup ambil state yang diperlukan dari hook
+  const { login, isLoading, errorMessage } = useAuthLogin();
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
-    setErrorMessage("");
 
     try {
-      // Panggil service dummy
-      const response = await loginUser(email, password);
-      console.log("Login Berhasil:", response);
-      alert(`Selamat datang, ${response.data.name}!`);
-      // Di sini nanti kita redirect ke Dashboard
+      const response = await login(username, password);
+      onLoginSuccess?.(response);
     } catch (error) {
-      setErrorMessage(error.message);
-    } finally {
-      setIsLoading(false);
+      // ✅ tidak perlu setErrorMessage/setIsLoading di sini
+      // karena hook sudah handle error & loading
+      console.error("Login error:", error);
     }
   };
 
   return (
     <div className="min-h-screen w-full bg-slate-950 flex items-center justify-center p-4 font-sans">
-      {/* Container Card */}
       <div className="w-full max-w-md bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-8 relative">
-        {/* Tombol Kembali */}
         <button
           onClick={onBack}
           className="absolute top-6 left-6 text-slate-500 hover:text-yellow-500 transition"
+          type="button"
+          disabled={isLoading}
+          aria-label="Kembali"
         >
           <ArrowLeft className="w-6 h-6" />
         </button>
 
-        {/* Header Logo */}
         <div className="flex flex-col items-center mb-8">
           <div className="p-3 bg-slate-950 rounded-full border border-slate-800 mb-4 shadow-lg">
             <Gem className="w-10 h-10 text-yellow-500" />
@@ -49,9 +45,7 @@ const LoginPage = ({ onBack }) => {
           </p>
         </div>
 
-        {/* Form */}
         <form onSubmit={handleLogin} className="space-y-6">
-          {/* Input Email */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-slate-300">
               Email Address
@@ -59,17 +53,18 @@ const LoginPage = ({ onBack }) => {
             <div className="relative">
               <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
               <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 placeholder="admin@diamond.com"
-                className="w-full bg-slate-950 border border-slate-700 text-white rounded-lg py-3 pl-10 pr-4 focus:outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition placeholder-slate-600"
+                className="w-full bg-slate-950 border border-slate-700 text-white rounded-lg py-3 pl-10 pr-4 focus:outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition placeholder-slate-600 disabled:opacity-70"
                 required
+                disabled={isLoading}
+                autoComplete="username"
               />
             </div>
           </div>
 
-          {/* Input Password */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-slate-300">
               Password
@@ -81,20 +76,20 @@ const LoginPage = ({ onBack }) => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full bg-slate-950 border border-slate-700 text-white rounded-lg py-3 pl-10 pr-4 focus:outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition placeholder-slate-600"
+                className="w-full bg-slate-950 border border-slate-700 text-white rounded-lg py-3 pl-10 pr-4 focus:outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition placeholder-slate-600 disabled:opacity-70"
                 required
+                disabled={isLoading}
+                autoComplete="current-password"
               />
             </div>
           </div>
 
-          {/* Error Message */}
           {errorMessage && (
             <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm text-center">
               {errorMessage}
             </div>
           )}
 
-          {/* Tombol Submit */}
           <button
             type="submit"
             disabled={isLoading}

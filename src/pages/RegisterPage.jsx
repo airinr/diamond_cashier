@@ -1,11 +1,21 @@
 import React, { useState } from "react";
 import { registerUser } from "../services/authService";
-import { Gem, Mail, Lock, User, Loader2, ArrowLeft } from "lucide-react";
+import {
+  Gem,
+  Mail,
+  Lock,
+  User,
+  Loader2,
+  ArrowLeft,
+  AtSign,
+} from "lucide-react";
 
 const RegisterPage = ({ onBack, onLoginLink }) => {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
+  const [namaUser, setNamaUser] = useState("");
   const [password, setPassword] = useState("");
+
+  const role = "admin"; // default role
 
   const [isLoading, setIsLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -15,14 +25,21 @@ const RegisterPage = ({ onBack, onLoginLink }) => {
     setIsLoading(true);
 
     try {
-      await registerUser(name, email, password);
+      await registerUser({
+        username,
+        nama_user: namaUser,
+        password,
+        role,
+      });
+
       setSuccess(true);
-      // Reset form
-      setName("");
-      setEmail("");
+
+      // reset form
+      setUsername("");
+      setNamaUser("");
       setPassword("");
     } catch (error) {
-      alert("Gagal mendaftar", error);
+      alert(error.message || "Gagal mendaftar");
     } finally {
       setIsLoading(false);
     }
@@ -38,9 +55,7 @@ const RegisterPage = ({ onBack, onLoginLink }) => {
           <h2 className="text-2xl font-bold text-white mb-2">
             Registrasi Berhasil!
           </h2>
-          <p className="text-slate-400 mb-6">
-            Akun toko Anda telah siap digunakan.
-          </p>
+          <p className="text-slate-400 mb-6">Akun admin berhasil dibuat.</p>
           <button
             onClick={onLoginLink}
             className="px-6 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg font-bold transition w-full"
@@ -53,9 +68,8 @@ const RegisterPage = ({ onBack, onLoginLink }) => {
   }
 
   return (
-    <div className="min-h-screen w-full bg-slate-950 flex items-center justify-center p-4 font-sans">
+    <div className="min-h-screen w-full bg-slate-950 flex items-center justify-center p-4">
       <div className="w-full max-w-md bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-8 relative">
-        {/* Tombol Kembali ke Landing Page */}
         <button
           onClick={onBack}
           className="absolute top-6 left-6 text-slate-500 hover:text-yellow-500 transition"
@@ -63,78 +77,71 @@ const RegisterPage = ({ onBack, onLoginLink }) => {
           <ArrowLeft className="w-6 h-6" />
         </button>
 
-        <div className="flex flex-col items-center mb-6">
-          <h2 className="text-2xl font-bold text-white">Daftar Toko Baru</h2>
+        <div className="text-center mb-6">
+          <h2 className="text-2xl font-bold text-white">Daftar Admin Toko</h2>
           <p className="text-slate-400 text-sm mt-1">
-            Lengkapi data untuk membuat akun kasir
+            Buat akun admin Diamond Kasir
           </p>
         </div>
 
         <form onSubmit={handleRegister} className="space-y-5">
-          {/* Input Nama */}
-          <div className="space-y-1">
-            <label className="text-sm font-medium text-slate-300">
-              Nama Lengkap
-            </label>
+          {/* Username */}
+          <div>
+            <label className="text-sm text-slate-300">Username</label>
+            <div className="relative">
+              <AtSign className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+              <input
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+                className="w-full bg-slate-950 border border-slate-700 text-white rounded-lg py-3 pl-10 pr-4"
+                placeholder="andika99"
+              />
+            </div>
+          </div>
+
+          {/* Nama User */}
+          <div>
+            <label className="text-sm text-slate-300">Nama Lengkap</label>
             <div className="relative">
               <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
               <input
                 type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Manager Diamond"
-                className="w-full bg-slate-950 border border-slate-700 text-white rounded-lg py-3 pl-10 pr-4 focus:outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition placeholder-slate-600"
+                value={namaUser}
+                onChange={(e) => setNamaUser(e.target.value)}
                 required
+                className="w-full bg-slate-950 border border-slate-700 text-white rounded-lg py-3 pl-10 pr-4"
+                placeholder="Andika Pratama"
               />
             </div>
           </div>
 
-          {/* Input Email */}
-          <div className="space-y-1">
-            <label className="text-sm font-medium text-slate-300">
-              Email Address
-            </label>
-            <div className="relative">
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="toko@diamond.com"
-                className="w-full bg-slate-950 border border-slate-700 text-white rounded-lg py-3 pl-10 pr-4 focus:outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition placeholder-slate-600"
-                required
-              />
-            </div>
-          </div>
-
-          {/* Input Password */}
-          <div className="space-y-1">
-            <label className="text-sm font-medium text-slate-300">
-              Password
-            </label>
+          {/* Password */}
+          <div>
+            <label className="text-sm text-slate-300">Password</label>
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Buat password kuat"
-                className="w-full bg-slate-950 border border-slate-700 text-white rounded-lg py-3 pl-10 pr-4 focus:outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition placeholder-slate-600"
                 required
+                className="w-full bg-slate-950 border border-slate-700 text-white rounded-lg py-3 pl-10 pr-4"
+                placeholder="Password kuat"
               />
             </div>
           </div>
 
-          {/* Tombol Submit */}
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-slate-100 hover:bg-white text-slate-900 font-bold py-3 rounded-lg transition mt-4 flex items-center justify-center disabled:opacity-70"
+            className="w-full bg-yellow-500 hover:bg-yellow-400 text-slate-900 font-bold py-3 rounded-lg"
           >
             {isLoading ? (
-              <Loader2 className="w-5 h-5 animate-spin" />
+              <Loader2 className="animate-spin mx-auto" />
             ) : (
-              "Buat Akun Sekarang"
+              "Buat Akun Admin"
             )}
           </button>
         </form>
@@ -145,7 +152,7 @@ const RegisterPage = ({ onBack, onLoginLink }) => {
             onClick={onLoginLink}
             className="text-yellow-500 font-bold hover:underline"
           >
-            Login disini
+            Login di sini
           </button>
         </div>
       </div>

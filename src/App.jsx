@@ -2,9 +2,10 @@ import { useState } from "react";
 import LandingPage from "./pages/LandingPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
+import DashboardPage from "./pages/admin/DashboardPage";
 
 function App() {
-  // State halaman: 'landing' | 'login' | 'register'
+  // landing | login | register | dashboard
   const [currentPage, setCurrentPage] = useState("landing");
 
   return (
@@ -17,7 +18,10 @@ function App() {
       )}
 
       {currentPage === "login" && (
-        <LoginPage onBack={() => setCurrentPage("landing")} />
+        <LoginPage
+          onBack={() => setCurrentPage("landing")}
+          onLoginSuccess={() => setCurrentPage("dashboard")}
+        />
       )}
 
       {currentPage === "register" && (
@@ -26,6 +30,8 @@ function App() {
           onLoginLink={() => setCurrentPage("login")}
         />
       )}
+
+      {currentPage === "dashboard" && <DashboardPage />}
     </>
   );
 }

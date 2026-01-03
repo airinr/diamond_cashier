@@ -1,42 +1,43 @@
-// Simulasi login ke backend (Dummy)
-export const loginUser = async (email, password) => {
-  return new Promise((resolve, reject) => {
-    // Ceritanya loading 1.5 detik
-    setTimeout(() => {
-      // Hardcode username & password untuk tes
-      if (email === "admin@diamond.com" && password === "admin123") {
-        resolve({
-          status: "success",
-          data: {
-            id: 1,
-            name: "Manager Toko",
-            token: "dummy-token-jwt-12345",
-            role: "admin",
-          },
-        });
-      } else {
-        reject(new Error("Email atau password tidak terdaftar."));
-      }
-    }, 1500);
+const API_URL = import.meta.env.VITE_API_URL;
+
+export const loginUser = async (username, password) => {
+  const body = new URLSearchParams();
+  body.append("username", username);
+  body.append("password", password);
+
+  const res = await fetch("/api/login", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      Accept: "application/json",
+    },
+    body,
   });
+
+  const result = await res.json();
+
+  if (!res.ok) {
+    throw new Error(result.detail?.[0]?.msg || result.message || "Login gagal");
+  }
+
+  return result;
 };
 
-// Simulasi Register
-export const registerUser = async (name, email, password) => {
-  return new Promise((resolve) => {
-    // Simulasi loading 1.5 detik
-    setTimeout(() => {
-      // Kita anggap register selalu berhasil untuk dummy ini
-      resolve({
-        status: "success",
-        message: "Akun berhasil dibuat",
-        data: {
-          name: name,
-          email: email,
-          password: password,
-          role: "staff", // Default role
-        },
-      });
-    }, 1500);
+export const registerUser = async (payload) => {
+  const res = await fetch("/api/users", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    body: JSON.stringify(payload),
   });
+
+  const result = await res.json();
+
+  if (!res.ok) {
+    throw new Error(result.detail?.[0]?.msg || "Register gagal");
+  }
+
+  return result;
 };
