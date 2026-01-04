@@ -1,8 +1,8 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom"; // ✅ 1. Import ini
 import { registerUser } from "../services/authService";
 import {
   Gem,
-  Mail,
   Lock,
   User,
   Loader2,
@@ -10,7 +10,10 @@ import {
   AtSign,
 } from "lucide-react";
 
-const RegisterPage = ({ onBack, onLoginLink }) => {
+// ✅ 2. Hapus props onBack/onLoginLink
+const RegisterPage = () => {
+  const navigate = useNavigate(); // ✅ 3. Panggil hook ini
+
   const [username, setUsername] = useState("");
   const [namaUser, setNamaUser] = useState("");
   const [password, setPassword] = useState("");
@@ -33,7 +36,6 @@ const RegisterPage = ({ onBack, onLoginLink }) => {
       });
 
       setSuccess(true);
-
       // reset form
       setUsername("");
       setNamaUser("");
@@ -45,6 +47,7 @@ const RegisterPage = ({ onBack, onLoginLink }) => {
     }
   };
 
+  // --- TAMPILAN SUKSES ---
   if (success) {
     return (
       <div className="min-h-screen w-full bg-slate-950 flex items-center justify-center p-4">
@@ -56,8 +59,10 @@ const RegisterPage = ({ onBack, onLoginLink }) => {
             Registrasi Berhasil!
           </h2>
           <p className="text-slate-400 mb-6">Akun admin berhasil dibuat.</p>
+          
           <button
-            onClick={onLoginLink}
+            // ✅ 4. Arahkan user ke halaman login setelah sukses
+            onClick={() => navigate("/login")}
             className="px-6 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg font-bold transition w-full"
           >
             Lanjut ke Login
@@ -67,11 +72,13 @@ const RegisterPage = ({ onBack, onLoginLink }) => {
     );
   }
 
+  // --- TAMPILAN FORM ---
   return (
     <div className="min-h-screen w-full bg-slate-950 flex items-center justify-center p-4">
       <div className="w-full max-w-md bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-8 relative">
         <button
-          onClick={onBack}
+          // ✅ 5. Tombol back kembali ke Landing Page ("/")
+          onClick={() => navigate("/")}
           className="absolute top-6 left-6 text-slate-500 hover:text-yellow-500 transition"
         >
           <ArrowLeft className="w-6 h-6" />
@@ -95,7 +102,7 @@ const RegisterPage = ({ onBack, onLoginLink }) => {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
-                className="w-full bg-slate-950 border border-slate-700 text-white rounded-lg py-3 pl-10 pr-4"
+                className="w-full bg-slate-950 border border-slate-700 text-white rounded-lg py-3 pl-10 pr-4 focus:outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition"
                 placeholder="andika99"
               />
             </div>
@@ -111,7 +118,7 @@ const RegisterPage = ({ onBack, onLoginLink }) => {
                 value={namaUser}
                 onChange={(e) => setNamaUser(e.target.value)}
                 required
-                className="w-full bg-slate-950 border border-slate-700 text-white rounded-lg py-3 pl-10 pr-4"
+                className="w-full bg-slate-950 border border-slate-700 text-white rounded-lg py-3 pl-10 pr-4 focus:outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition"
                 placeholder="Andika Pratama"
               />
             </div>
@@ -127,7 +134,7 @@ const RegisterPage = ({ onBack, onLoginLink }) => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="w-full bg-slate-950 border border-slate-700 text-white rounded-lg py-3 pl-10 pr-4"
+                className="w-full bg-slate-950 border border-slate-700 text-white rounded-lg py-3 pl-10 pr-4 focus:outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition"
                 placeholder="Password kuat"
               />
             </div>
@@ -136,10 +143,10 @@ const RegisterPage = ({ onBack, onLoginLink }) => {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-yellow-500 hover:bg-yellow-400 text-slate-900 font-bold py-3 rounded-lg"
+            className="w-full bg-yellow-500 hover:bg-yellow-400 text-slate-900 font-bold py-3 rounded-lg flex justify-center items-center transition"
           >
             {isLoading ? (
-              <Loader2 className="animate-spin mx-auto" />
+              <Loader2 className="animate-spin" />
             ) : (
               "Buat Akun Admin"
             )}
@@ -149,7 +156,8 @@ const RegisterPage = ({ onBack, onLoginLink }) => {
         <div className="mt-6 text-center text-sm text-slate-500">
           Sudah punya akun?{" "}
           <button
-            onClick={onLoginLink}
+            // ✅ 6. Link login juga pakai navigate
+            onClick={() => navigate("/login")}
             className="text-yellow-500 font-bold hover:underline"
           >
             Login di sini

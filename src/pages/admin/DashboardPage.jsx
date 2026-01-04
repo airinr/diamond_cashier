@@ -7,7 +7,6 @@ import {
   Receipt,
   TrendingUp,
 } from "lucide-react";
-import Sidebar from "../../components/sidebar";
 import StatCard from "../../components/StatCard";
 import ProductCard from "../../components/ProductCard";
 import { getProducts } from "../../services/productServices";
@@ -19,74 +18,74 @@ const rupiah = (n) =>
 
 const cn = (...cls) => cls.filter(Boolean).join(" ");
 
-const sampleProducts = [
-  {
-    id: "P001",
-    name: "Indomie Goreng",
-    category: "Makanan",
-    price: 3500,
-    stock: 120,
-    image:
-      "https://images.unsplash.com/photo-1612929633738-8fe44f7ec841?q=80&w=900&auto=format&fit=crop",
-  },
-  {
-    id: "P002",
-    name: "Teh Botol 350ml",
-    category: "Minuman",
-    price: 5000,
-    stock: 80,
-    image:
-      "https://images.unsplash.com/photo-1544145945-f90425340c7e?q=80&w=900&auto=format&fit=crop",
-  },
-  {
-    id: "P003",
-    name: "Sabun Mandi",
-    category: "Kebutuhan",
-    price: 9000,
-    stock: 40,
-    image:
-      "https://images.unsplash.com/photo-1615486364462-ef6363adf8c2?q=80&w=900&auto=format&fit=crop",
-  },
-  {
-    id: "P004",
-    name: "Sikat Gigi",
-    category: "Kebutuhan",
-    price: 7000,
-    stock: 25,
-    image:
-      "https://images.unsplash.com/photo-1588776814546-1f2c5a8f9499?q=80&w=900&auto=format&fit=crop",
-  },
-];
+// const sampleProducts = [
+//   {
+//     id: "P001",
+//     name: "Indomie Goreng",
+//     category: "Makanan",
+//     price: 3500,
+//     stock: 120,
+//     image:
+//       "https://images.unsplash.com/photo-1612929633738-8fe44f7ec841?q=80&w=900&auto=format&fit=crop",
+//   },
+//   {
+//     id: "P002",
+//     name: "Teh Botol 350ml",
+//     category: "Minuman",
+//     price: 5000,
+//     stock: 80,
+//     image:
+//       "https://images.unsplash.com/photo-1544145945-f90425340c7e?q=80&w=900&auto=format&fit=crop",
+//   },
+//   {
+//     id: "P003",
+//     name: "Sabun Mandi",
+//     category: "Kebutuhan",
+//     price: 9000,
+//     stock: 40,
+//     image:
+//       "https://images.unsplash.com/photo-1615486364462-ef6363adf8c2?q=80&w=900&auto=format&fit=crop",
+//   },
+//   {
+//     id: "P004",
+//     name: "Sikat Gigi",
+//     category: "Kebutuhan",
+//     price: 7000,
+//     stock: 25,
+//     image:
+//       "https://images.unsplash.com/photo-1588776814546-1f2c5a8f9499?q=80&w=900&auto=format&fit=crop",
+//   },
+// ];
 
-const sampleTransactions = [
-  {
-    id: "TRX-0001",
-    date: "2026-01-03 07:10",
-    customer: "Walk-in",
-    items: 3,
-    total: 18500,
-    status: "PAID",
-    method: "CASH",
-  },
-  {
-    id: "TRX-0002",
-    date: "2026-01-03 06:58",
-    customer: "Airin",
-    items: 6,
-    total: 54000,
-    status: "PAID",
-    method: "QRIS",
-  },
-  {
-    id: "TRX-0003",
-    date: "2026-01-02 21:12",
-    customer: "Walk-in",
-    items: 1,
-    total: 5000,
-    status: "PAID",
-    method: "CASH",
-  },
-];
+// const sampleTransactions = [
+//   {
+//     id: "TRX-0001",
+//     date: "2026-01-03 07:10",
+//     customer: "Walk-in",
+//     items: 3,
+//     total: 18500,
+//     status: "PAID",
+//     method: "CASH",
+//   },
+//   {
+//     id: "TRX-0002",
+//     date: "2026-01-03 06:58",
+//     customer: "Airin",
+//     items: 6,
+//     total: 54000,
+//     status: "PAID",
+//     method: "QRIS",
+//   },
+//   {
+//     id: "TRX-0003",
+//     date: "2026-01-02 21:12",
+//     customer: "Walk-in",
+//     items: 1,
+//     total: 5000,
+//     status: "PAID",
+//     method: "CASH",
+//   },
+// ];
 
 // ✅ mapper: backend -> UI
 const mapProductFromApi = (x) => ({
@@ -119,11 +118,11 @@ function StatusPill({ status }) {
 }
 
 export default function Dashboard() {
-  const [products, setProducts] = useState(sampleProducts);
+  const [products, setProducts] = useState([]);
   const [loadingProducts, setLoadingProducts] = useState(false);
   const [errorProducts, setErrorProducts] = useState("");
 
-  const [transactions] = useState(sampleTransactions);
+  const [transactions] = useState([]);
 
   const [query, setQuery] = useState("");
   const [cart, setCart] = useState([]);
@@ -148,13 +147,10 @@ export default function Dashboard() {
           // ✅ mapping sesuai backend
           const mapped = list.map(mapProductFromApi);
           setProducts(mapped);
-        } else {
-          setProducts(sampleProducts);
-        }
+        } 
       } catch (err) {
         if (!alive) return;
         setErrorProducts(err?.message || "Gagal mengambil produk");
-        setProducts(sampleProducts);
       } finally {
         // eslint-disable-next-line no-unsafe-finally
         if (!alive) return;
@@ -208,9 +204,7 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <Sidebar active="dashboard" />
-
-      <div className="ml-52 min-h-screen">
+      
         {/* Topbar */}
         <div className="sticky top-0 z-10 border-b border-slate-200 bg-white/80 backdrop-blur">
           <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4">
@@ -348,7 +342,6 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
-      </div>
       {/* end content */}
     </div>
   );

@@ -1,26 +1,33 @@
 import { LayoutDashboard, Package, Receipt, Users, LogOut } from "lucide-react";
+import { useNavigate } from "react-router-dom"; // ✅ 1. Import ini
 
-const Sidebar = ({ active = "dashboard", onLogout }) => {
+const Sidebar = ({ active, onLogout }) => {
+  const navigate = useNavigate(); // ✅ 2. Panggil hook ini
+
   const menu = [
     {
       key: "dashboard",
       label: "Dashboard",
       icon: LayoutDashboard,
+      path: "/admin", // ✅ 3. Tambahkan Path tujuan (Sesuai App.jsx)
     },
     {
       key: "product",
       label: "Produk",
       icon: Package,
+      path: "/admin/products", // ✅ Arahkan ke /admin/products
     },
     {
       key: "transaction",
       label: "Transaksi",
       icon: Receipt,
+      path: "/admin/transactions", // (Nanti dibuat)
     },
     {
       key: "user",
       label: "User",
       icon: Users,
+      path: "/admin/users", // (Nanti dibuat)
     },
   ];
 
@@ -42,6 +49,8 @@ const Sidebar = ({ active = "dashboard", onLogout }) => {
           return (
             <button
               key={item.key}
+              // ✅ 4. Pasang navigasi di sini
+              onClick={() => navigate(item.path)} 
               className={`flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition
                 ${
                   isActive
@@ -60,7 +69,8 @@ const Sidebar = ({ active = "dashboard", onLogout }) => {
       {/* Logout */}
       <div className="absolute bottom-0 w-full px-4 py-6">
         <button
-          onClick={onLogout}
+          // Logout tetap pakai props dari MainLayout, karena logicnya beda (hapus token dll)
+          onClick={onLogout} 
           className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold text-yellow-300 hover:bg-red-500 hover:text-white transition"
         >
           <LogOut className="h-5 w-5" />
