@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import React, { useState } from "react";
 import { Plus, Pencil, Trash2, X, Search, Package, Layers } from "lucide-react";
-import Sidebar from "../../components/Sidebar";
+import Sidebar from "../../components/sidebar";
 import { useProducts } from "../../hooks/admin/useProduct"; // Hook Produk Lama
 import { useCategories } from "../../hooks/admin/useCategories"; // ✅ Hook Kategori Baru
 import { rupiah, cn } from "../../utils/formatters";

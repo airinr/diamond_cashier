@@ -3,7 +3,7 @@ import React from "react";
 import { Search, Package, Receipt, TrendingUp } from "lucide-react";
 
 // Import Components
-import Sidebar from "../../components/Sidebar";
+import Sidebar from "../../components/sidebar";
 import StatCard from "../../components/StatCard";
 import ProductCard from "../../components/ProductCard";
 
