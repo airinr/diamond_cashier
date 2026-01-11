@@ -1,5 +1,3 @@
-const API_URL = import.meta.env.VITE_API_URL;
-
 export const loginUser = async (username, password) => {
   const body = new URLSearchParams();
   body.append("username", username);
@@ -14,10 +12,14 @@ export const loginUser = async (username, password) => {
     body,
   });
 
-  const result = await res.json();
+  const text = await res.text();
+
+  const result = text ? JSON.parse(text) : null;
 
   if (!res.ok) {
-    throw new Error(result.detail?.[0]?.msg || result.message || "Login gagal");
+    throw new Error(
+      result?.detail?.[0]?.msg || result?.message || "Login gagal"
+    );
   }
 
   return result;

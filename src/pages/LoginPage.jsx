@@ -1,23 +1,26 @@
 import React, { useState } from "react";
 import { Gem, Mail, Lock, Loader2, ArrowLeft } from "lucide-react";
-import { useAuthLogin } from "../hooks/useAuthLogin";
+import { useNavigate } from "react-router-dom"; // ✅ 1. Import Hook Routing
+import { useAuthLogin } from "../hooks/useAuthLogin"; // Pastikan path ini benar
 
-const LoginPage = ({ onBack, onLoginSuccess }) => {
+const LoginPage = () => {
+  // ✅ 2. Hapus props, gunakan navigate
+  const navigate = useNavigate();
+
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  // ✅ cukup ambil state yang diperlukan dari hook
   const { login, isLoading, errorMessage } = useAuthLogin();
 
   const handleLogin = async (e) => {
     e.preventDefault();
 
     try {
-      const response = await login(username, password);
-      onLoginSuccess?.(response);
+      await login(username, password);
+
+      // ✅ 3. Redirect ke Dashboard jika login sukses
+      navigate("/dashboard");
     } catch (error) {
-      // ✅ tidak perlu setErrorMessage/setIsLoading di sini
-      // karena hook sudah handle error & loading
       console.error("Login error:", error);
     }
   };
@@ -26,7 +29,8 @@ const LoginPage = ({ onBack, onLoginSuccess }) => {
     <div className="min-h-screen w-full bg-slate-950 flex items-center justify-center p-4 font-sans">
       <div className="w-full max-w-md bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-8 relative">
         <button
-          onClick={onBack}
+          // ✅ 4. Logic Back ke Landing Page
+          onClick={() => navigate("/")}
           className="absolute top-6 left-6 text-slate-500 hover:text-yellow-500 transition"
           type="button"
           disabled={isLoading}

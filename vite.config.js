@@ -8,7 +8,7 @@ export default defineConfig({
       "/api": {
         target: "https://diamond.rutherweb.my.id",
         changeOrigin: true,
-        secure: true, // kalau SSL valid. kalau bermasalah, coba false
+        secure: true,
         rewrite: (path) => path.replace(/^\/api/, ""),
       },
     },

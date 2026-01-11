@@ -1,11 +1,15 @@
 import React from "react";
 import { Gem, Lock, UserCircle } from "lucide-react";
+import { useNavigate } from "react-router-dom"; // ✅ 1. Import Hook Routing
 
-const LandingPage = ({ onLoginClick, onRegisterClick }) => {
+const LandingPage = () => {
+  // ✅ 2. Inisialisasi Hook Navigate
+  const navigate = useNavigate();
+
   return (
     // Container utama: Full layar, background hitam pekat, teks putih
     <div className="min-h-screen w-full bg-slate-950 flex flex-col items-center justify-center font-sans text-slate-200 relative overflow-hidden">
-      {/* --- ORNAMEN LATAR BELAKANG (Opsional, agar tidak terlalu mati) --- */}
+      {/* --- ORNAMEN LATAR BELAKANG --- */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
         <div className="absolute top-[-10%] left-[20%] w-[500px] h-[500px] bg-yellow-600/10 rounded-full blur-[120px]"></div>
         <div className="absolute bottom-[-10%] right-[20%] w-[400px] h-[400px] bg-slate-800/20 rounded-full blur-[100px]"></div>
@@ -34,7 +38,7 @@ const LandingPage = ({ onLoginClick, onRegisterClick }) => {
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full">
           {/* Tombol LOGIN (Utama - Kuning) */}
           <button
-            onClick={onLoginClick}
+            onClick={() => navigate("/login")} // ✅ 3. Navigasi ke Login
             className="w-full sm:w-auto px-8 py-3 bg-yellow-500 hover:bg-yellow-400 text-slate-950 font-bold rounded-lg transition-all transform hover:-translate-y-1 shadow-[0_0_20px_rgba(234,179,8,0.3)] flex items-center justify-center gap-2"
           >
             <UserCircle className="w-5 h-5" />
@@ -43,7 +47,7 @@ const LandingPage = ({ onLoginClick, onRegisterClick }) => {
 
           {/* Tombol REGISTER (Sekunder - Outline) */}
           <button
-            onClick={onRegisterClick}
+            onClick={() => navigate("/register")} // ✅ 4. Navigasi ke Register
             className="w-full sm:w-auto px-8 py-3 bg-transparent border border-slate-700 hover:border-yellow-500/50 hover:text-yellow-500 text-slate-300 font-medium rounded-lg transition-all flex items-center justify-center gap-2"
           >
             Registrasi

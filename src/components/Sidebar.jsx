@@ -1,26 +1,34 @@
+import React from "react";
 import { LayoutDashboard, Package, Receipt, Users, LogOut } from "lucide-react";
+import { useNavigate } from "react-router-dom"; // 1. Import useNavigate
 
 const Sidebar = ({ active = "dashboard", onLogout }) => {
+  const navigate = useNavigate(); // 2. Inisialisasi hook navigasi
+
   const menu = [
     {
       key: "dashboard",
       label: "Dashboard",
       icon: LayoutDashboard,
+      path: "/dashboard", // 3. Tambahkan path tujuan
     },
     {
       key: "product",
       label: "Produk",
       icon: Package,
+      path: "/products", // 3. Tambahkan path tujuan
     },
     {
       key: "transaction",
       label: "Transaksi",
       icon: Receipt,
+      path: "/transactions", // (Opsional) Persiapan untuk halaman transaksi
     },
     {
       key: "user",
       label: "User",
       icon: Users,
+      path: "/users", // (Opsional) Persiapan untuk halaman user
     },
   ];
 
@@ -42,6 +50,7 @@ const Sidebar = ({ active = "dashboard", onLogout }) => {
           return (
             <button
               key={item.key}
+              onClick={() => navigate(item.path)} // 4. Panggil navigate saat diklik
               className={`flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition
                 ${
                   isActive
