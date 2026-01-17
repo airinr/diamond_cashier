@@ -1,14 +1,10 @@
 import { useState, useEffect } from "react";
-import { 
+import {
   getPenjualan,
   createTransaction,
-  updateTransaction,
-  deleteTransaction,
 } from "../../services/transactionServices";
-import { updateProduct } from "../../services/productServices";
 
-export const useTransactions = () => {
-  const [pembelian, setPembelian] = useState([]);
+export const useSales = () => {
   const [penjualan, setPenjualan] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -17,17 +13,13 @@ export const useTransactions = () => {
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isEditMode, setIsEditMode] = useState(false);
-  const [currentId, setCurrentId] = useState(null);
 
   // Form State
   const [formData, setFormData] = useState({
     nama_pembeli: "",
     no_hp_pembeli: "",
     kode_penjualan: "",
-    detail_produk: [
-      { id_produk: 0, jumlah: 0 }
-    ]
+    detail_produk: [{ id_produk: 0, jumlah: 0 }],
   });
 
   const fetchData = async () => {
@@ -48,29 +40,32 @@ export const useTransactions = () => {
     fetchData();
   }, []);
 
-  // Fungsi Generator Kode 
+  // Fungsi Generator Kode
   const generateKodeTransaksi = () => {
     const date = new Date();
-    // Bikin random angka/huruf (misal 5 karakter)
+
+    const year = date.getFullYear();
+    // Tambah padStart(2, '0') biar bulan 1 jadi '01'
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+
+    // Random string 5 karakter (Huruf Besar)
     const randomStr = Math.random().toString(36).substring(2, 7).toUpperCase();
-    
-    // Format: #TRX-RANDOM (Contoh: #TRX-X7A2B)
-    return `#TRX-${randomStr}`;
+
+    // Gabungin
+    // Contoh Output: #TRX-20260116-XY7Z9
+    return `TRX-${year}${month}${day}-${randomStr}`;
   };
 
   // 2. Handlers untuk Modal
   const openAddModal = () => {
-    setIsEditMode(false);
-
     const autoKode = generateKodeTransaksi();
 
     setFormData({
       nama_pembeli: "Umum",
       no_hp_pembeli: "",
       kode_penjualan: autoKode,
-      detail_produk: [
-        { id_produk: 0, jumlah: 1 }
-      ]
+      detail_produk: [{ id_produk: 0, jumlah: 1 }],
     });
     setIsModalOpen(true);
   };
@@ -95,11 +90,7 @@ export const useTransactions = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      if (isEditMode) {
-        await updateTransaction(currentId, formData);
-      } else {
-        await createTransaction(formData);
-      }
+      await createTransaction(formData);
       await fetchData(); // Refresh data
       closeModal();
     } catch (err) {
@@ -110,7 +101,6 @@ export const useTransactions = () => {
   };
 
   return {
-    pembelian,
     penjualan,
     openAddModal,
     closeModal,
@@ -118,7 +108,6 @@ export const useTransactions = () => {
     loading,
     error,
     isModalOpen,
-    isEditMode,
     formData,
     setFormData,
     openDetailModal,
