@@ -11,6 +11,7 @@ export function useAuthLogin() {
 
     try {
       const res = await loginUser(username, password);
+      localStorage.setItem("token", res.access_token);
       return res;
     } catch (err) {
       const msg = err?.message || "Login gagal. Coba lagi.";
