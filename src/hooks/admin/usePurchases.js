@@ -4,6 +4,7 @@ import {
   createPurchase,
   predictPrice,
 } from "../../services/transactionServices";
+import * as XLSX from "xlsx";
 
 export const usePurchases = () => {
   const [pembelian, setPembelian] = useState([]);
@@ -20,6 +21,10 @@ export const usePurchases = () => {
   const [loadingPrediction, setLoadingPrediction] = useState(false);
   const [predictedPrice, setPredictedPrice] = useState(null);
   const [showPrediction, setShowPrediction] = useState(false);
+
+  //untuk rentang export excel
+  const [exportStartDate, setExportStartDate] = useState("");
+  const [exportEndDate, setExportEndDate] = useState("");
 
   // Form State
   const [formData, setFormData] = useState({
@@ -44,7 +49,7 @@ export const usePurchases = () => {
     carat: 0.5,
     cut: 1, // 1-5
     color: 1, // 1-7
-    clarity: 1 // 1-8
+    clarity: 1, // 1-8
   });
 
   const fetchData = async () => {
@@ -211,6 +216,77 @@ export const usePurchases = () => {
     setSelectedTransaction(null);
   };
 
+  const handleExportPembelianExcel = () => {
+    // 1. Validasi: Pastikan data ada
+    if (!pembelian || pembelian.length === 0) {
+      alert("Tidak ada data pembelian untuk diexport.");
+      return;
+    }
+
+    // 2. Validasi: Pastikan Tanggal Dipilih
+    if (!exportStartDate || !exportEndDate) {
+      alert("Harap pilih Tanggal Mulai dan Tanggal Selesai terlebih dahulu!");
+      return;
+    }
+
+    // 3. Filter Data Berdasarkan Rentang Tanggal
+    const start = new Date(exportStartDate);
+    const end = new Date(exportEndDate);
+    // Set jam akhir ke 23:59:59 agar transaksi di hari terakhir tetap masuk
+    end.setHours(23, 59, 59);
+
+    const filteredData = pembelian.filter((item) => {
+      if (!item.tgl_transaksi) return false;
+      const itemDate = new Date(item.tgl_transaksi);
+      return itemDate >= start && itemDate <= end;
+    });
+
+    if (filteredData.length === 0) {
+      alert("Tidak ada transaksi pada rentang tanggal tersebut.");
+      return;
+    }
+
+    // 4. Mapping Data (Format Sesuai Gambar)
+    const excelData = filteredData.map((item) => {
+      const totalBayar = (item.harga_beli || 0) * (item.jumlah || 0);
+      const namaProduk =
+        item.produk?.nama_produk || item.nama_produk_baru || "Produk dihapus";
+
+      return {
+        "Kode Transaksi": item.kode_pembelian,
+        Tanggal: new Date(item.tgl_transaksi).toLocaleDateString("id-ID", {
+          day: "numeric",
+          month: "short",
+          year: "numeric",
+        }),
+        "Pembeli / Supplier": item.nama_penjual,
+        "No HP": item.no_hp_penjual,
+        Item: `${namaProduk} x ${item.jumlah}`,
+        "Total Bayar": totalBayar,
+      };
+    });
+
+    // 5. Buat File Excel
+    const worksheet = XLSX.utils.json_to_sheet(excelData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Laporan Pembelian");
+
+    const columnWidths = [
+      { wch: 25 },
+      { wch: 15 },
+      { wch: 25 },
+      { wch: 15 },
+      { wch: 40 },
+      { wch: 20 },
+    ];
+    worksheet["!cols"] = columnWidths;
+
+    XLSX.writeFile(
+      workbook,
+      `Laporan_Pembelian_${exportStartDate}_sd_${exportEndDate}.xlsx`,
+    );
+  };
+
   return {
     pembelian,
     openAddModal,
@@ -236,5 +312,10 @@ export const usePurchases = () => {
     handlePredChange,
     handlePredict,
     applyPrediction,
+    exportStartDate,
+    setExportStartDate,
+    exportEndDate,
+    setExportEndDate,
+    handleExportPembelianExcel,
   };
 };

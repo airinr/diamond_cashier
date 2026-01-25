@@ -1,6 +1,6 @@
-import React, { use, useState } from "react";
+import React, { useState } from "react";
 import Sidebar from "../../components/sidebar";
-import { Eye, Layers, Plus, Search, X } from "lucide-react"; // Tambah Eye
+import { Eye, Layers, Plus, Search, X, Download } from "lucide-react";
 import { rupiah, cn } from "../../utils/formatters";
 import { useSales } from "../../hooks/admin/useSales";
 import { useProducts } from "../../hooks/admin/useProduct";
@@ -34,16 +34,111 @@ export default function TransactionPage() {
                 Kelola Transaksi Penjualan dan Pembelian
               </p>
             </div>
-            {/* Action Button Dinamis */}
-            <button
-              onClick={
-                isJual ? salesLogic.openAddModal : purchaseLogic.openAddModal
-              }
-              className="flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 active:scale-95 transition"
-            >
-              <Plus size={16} />
-              {isJual ? "Tambah Penjualan" : "Tambah Pembelian"}
-            </button>
+
+            {/* 2. GROUP TOMBOL AKSI DISINI 👇 */}
+            <div className="flex items-center gap-2">
+              {/* ========================================= */}
+              {/* BAGIAN EXPORT UNTUK PEMBELIAN (!isJual)   */}
+              {/* ========================================= */}
+              {!isJual && (
+                <>
+                  <div className="flex flex-col items-start mr-2">
+                    <span className="text-[10px] text-slate-500 font-bold mb-1 uppercase tracking-wide">
+                      Rentang Export
+                    </span>
+                    <div className="hidden md:flex items-center gap-1 bg-white p-1 rounded-xl border border-slate-200 shadow-sm">
+                      <input
+                        type="date"
+                        className="text-xs border-none outline-none text-slate-600 bg-transparent px-2 font-medium cursor-pointer"
+                        value={purchaseLogic.exportStartDate}
+                        onChange={(e) =>
+                          purchaseLogic.setExportStartDate(e.target.value)
+                        }
+                        title="Tanggal Mulai"
+                      />
+                      <span className="text-slate-300">-</span>
+                      <input
+                        type="date"
+                        className="text-xs border-none outline-none text-slate-600 bg-transparent px-2 font-medium cursor-pointer"
+                        value={purchaseLogic.exportEndDate}
+                        onChange={(e) =>
+                          purchaseLogic.setExportEndDate(e.target.value)
+                        }
+                        title="Tanggal Selesai"
+                      />
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={purchaseLogic.handleExportPembelianExcel}
+                    className="flex items-center gap-2 rounded-xl bg-green-600 px-4 py-2 text-sm font-semibold text-white hover:bg-green-700 active:scale-95 transition shadow-sm h-10 mt-auto"
+                    title="Download Laporan Pembelian"
+                  >
+                    <Download size={16} />
+                    Export
+                  </button>
+                </>
+              )}
+
+              {/* ========================================= */}
+              {/* BAGIAN EXPORT UNTUK PENJUALAN (isJual)    */}
+              {/* ========================================= */}
+              {isJual && (
+                <>
+                  <div className="flex flex-col items-start mr-2">
+                    <span className="text-[10px] text-slate-500 font-bold mb-1 uppercase tracking-wide">
+                      Rentang Export
+                    </span>
+                    <div className="hidden md:flex items-center gap-1 bg-white p-1 rounded-xl border border-slate-200 shadow-sm">
+                      <input
+                        type="date"
+                        className="text-xs border-none outline-none text-slate-600 bg-transparent px-2 font-medium cursor-pointer"
+                        value={salesLogic.exportStartDate}
+                        onChange={(e) =>
+                          salesLogic.setExportStartDate(e.target.value)
+                        }
+                        title="Tanggal Mulai"
+                      />
+                      <span className="text-slate-300">-</span>
+                      <input
+                        type="date"
+                        className="text-xs border-none outline-none text-slate-600 bg-transparent px-2 font-medium cursor-pointer"
+                        value={salesLogic.exportEndDate}
+                        onChange={(e) =>
+                          salesLogic.setExportEndDate(e.target.value)
+                        }
+                        title="Tanggal Selesai"
+                      />
+                    </div>
+                  </div>
+
+                  <button
+                    // Penting: Kita kirim data products ke fungsi export
+                    onClick={() =>
+                      salesLogic.handleExportPenjualanExcel(
+                        productLogic.products,
+                      )
+                    }
+                    className="flex items-center gap-2 rounded-xl bg-green-600 px-4 py-2 text-sm font-semibold text-white hover:bg-green-700 active:scale-95 transition shadow-sm h-10 mt-auto"
+                    title="Download Laporan Penjualan"
+                  >
+                    <Download size={16} />
+                    Export
+                  </button>
+                </>
+              )}
+
+              {/* Action Button Dinamis (Tambah) */}
+              <button
+                onClick={
+                  isJual ? salesLogic.openAddModal : purchaseLogic.openAddModal
+                }
+                className="flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 active:scale-95 transition shadow-sm h-10 mt-auto"
+              >
+                <Plus size={16} />
+                {isJual ? "Tambah Penjualan" : "Tambah Pembelian"}
+              </button>
+            </div>
           </div>
 
           {/* --- TAB NAVIGATION --- */}
@@ -55,7 +150,7 @@ export default function TransactionPage() {
                   "pb-3 text-sm font-semibold transition border-b-2",
                   activeTab === "penjualan"
                     ? "border-blue-600 text-blue-600"
-                    : "border-transparent text-slate-500 hover:text-slate-700"
+                    : "border-transparent text-slate-500 hover:text-slate-700",
                 )}
               >
                 Penjualan
@@ -66,7 +161,7 @@ export default function TransactionPage() {
                   "pb-3 text-sm font-semibold transition border-b-2",
                   activeTab === "pembelian"
                     ? "border-blue-600 text-blue-600"
-                    : "border-transparent text-slate-500 hover:text-slate-700"
+                    : "border-transparent text-slate-500 hover:text-slate-700",
                 )}
               >
                 Pembelian
@@ -85,7 +180,7 @@ export default function TransactionPage() {
                   ? `Daftar Transaksi Penjualan (${salesLogic.penjualan.length})`
                   : `Daftar Transaksi Pembelian (${purchaseLogic.pembelian.length})`}
               </h3>
-              {/* Search Placeholder (Logic search bisa ditambahkan nanti ke masing-masing hook) */}
+              {/* Search Placeholder */}
               <div
                 className="relative w-64 opacity-50 cursor-not-allowed"
                 title="Fitur pencarian coming soon"
@@ -115,18 +210,17 @@ export default function TransactionPage() {
                   </thead>
                   <tbody className="divide-y divide-slate-100">
                     {salesLogic.penjualan.map((item) => {
-                      // Logic hitung total
                       const hitungTotal = item.detail_produk?.reduce(
                         (total, detail) => {
                           const produkAsli = productLogic.products.find(
-                            (p) => p.id_produk === detail.id_produk
+                            (p) => p.id_produk === detail.id_produk,
                           );
                           const harga = produkAsli
                             ? Number(produkAsli.harga)
                             : 0;
                           return total + harga * Number(detail.jumlah);
                         },
-                        0
+                        0,
                       );
 
                       return (
@@ -134,7 +228,6 @@ export default function TransactionPage() {
                           key={item.id_transaksi || item.kode_penjualan}
                           className="hover:bg-slate-50 transition"
                         >
-                          {/* Kolom 1: Kode */}
                           <td className="px-6 py-4 font-medium text-slate-900 flex items-center gap-3">
                             <div className="h-10 w-10 rounded bg-blue-50 flex items-center justify-center text-blue-600">
                               <Layers size={20} />
@@ -145,7 +238,7 @@ export default function TransactionPage() {
                               </div>
                               <div className="text-xs text-slate-400">
                                 {new Date(
-                                  item.created_at || Date.now()
+                                  item.created_at || Date.now(),
                                 ).toLocaleDateString("id-ID", {
                                   day: "numeric",
                                   month: "short",
@@ -154,8 +247,6 @@ export default function TransactionPage() {
                               </div>
                             </div>
                           </td>
-
-                          {/* Kolom 2: Pembeli */}
                           <td className="px-6 py-4">
                             <div className="font-medium text-slate-800">
                               {item.nama_pembeli}
@@ -164,20 +255,14 @@ export default function TransactionPage() {
                               {item.no_hp_pembeli || "-"}
                             </div>
                           </td>
-
-                          {/* Kolom 3: Jumlah Item (Cuma angka aja sekarang) */}
                           <td className="px-6 py-4 text-center">
                             <span className="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-800">
                               {item.detail_produk?.length || 0} Jenis
                             </span>
                           </td>
-
-                          {/* Kolom 4: Total Bayar */}
                           <td className="px-6 py-4 text-right font-bold text-slate-900">
                             {rupiah(hitungTotal || 0)}
                           </td>
-
-                          {/* Kolom 5: Aksi (Hanya Tombol Detail) */}
                           <td className="px-6 py-4 text-center">
                             <button
                               onClick={() => salesLogic.openDetailModal(item)}
@@ -189,8 +274,6 @@ export default function TransactionPage() {
                         </tr>
                       );
                     })}
-
-                    {/* State Kosong */}
                     {salesLogic.penjualan.length === 0 && (
                       <tr>
                         <td
@@ -217,16 +300,13 @@ export default function TransactionPage() {
                   </thead>
                   <tbody className="divide-y divide-slate-100">
                     {purchaseLogic.pembelian.map((item) => {
-                      // Logic hitung total
-                      const hitungTotal =
-                        item.jumlah * (item.harga_beli || 0);
+                      const hitungTotal = item.jumlah * (item.harga_beli || 0);
 
                       return (
                         <tr
                           key={item.id_transaksi || item.kode_pembelian}
                           className="hover:bg-slate-50 transition"
                         >
-                          {/* Kolom 1: Kode */}
                           <td className="px-6 py-4 font-medium text-slate-900 flex items-center gap-3">
                             <div className="h-10 w-10 rounded bg-blue-50 flex items-center justify-center text-blue-600">
                               <Layers size={20} />
@@ -236,18 +316,18 @@ export default function TransactionPage() {
                                 #{item.kode_pembelian}
                               </div>
                               <div className="text-xs text-slate-400">
-                                {new Date(
-                                  item.tgl_transaksi || Date.now()
-                                ).toLocaleDateString("id-ID", {
-                                  day: "numeric",
-                                  month: "short",
-                                  year: "numeric",
-                                })}
+                                {item.tgl_transaksi
+                                  ? new Date(
+                                      item.tgl_transaksi,
+                                    ).toLocaleDateString("id-ID", {
+                                      day: "numeric",
+                                      month: "short",
+                                      year: "numeric",
+                                    })
+                                  : "-"}
                               </div>
                             </div>
                           </td>
-
-                          {/* Kolom 2: Penjual */}
                           <td className="px-6 py-4">
                             <div className="font-medium text-slate-800">
                               {item.nama_penjual}
@@ -256,21 +336,15 @@ export default function TransactionPage() {
                               {item.no_hp_penjual || "-"}
                             </div>
                           </td>
-
-                          {/* Kolom 3: Barang yang dibeli */}
                           <td className="px-6 py-4 text-center">
                             <span className="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-800">
-                              {item.produk.nama_produk || "Produk dihapus"} x{" "}
+                              {item.produk?.nama_produk || "Produk dihapus"} x{" "}
                               {item.jumlah}
                             </span>
                           </td>
-
-                          {/* Kolom 4: Total Bayar */}
                           <td className="px-6 py-4 text-right font-bold text-slate-900">
                             {rupiah(hitungTotal)}
                           </td>
-
-                          {/* Kolom 5: Aksi (Hanya Tombol Detail) */}
                           <td className="px-6 py-4 text-center">
                             <button
                               onClick={() =>
@@ -284,8 +358,6 @@ export default function TransactionPage() {
                         </tr>
                       );
                     })}
-
-                    {/* State Kosong */}
                     {purchaseLogic.pembelian.length === 0 && (
                       <tr>
                         <td
@@ -304,13 +376,13 @@ export default function TransactionPage() {
         </div>
       </div>
 
-      {/* --- MODAL PRODUK --- */}
+      {/* --- MODAL PRODUK (PENJUALAN) --- */}
       {salesLogic.isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
           <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl animate-in fade-in zoom-in duration-200">
             <div className="flex items-center justify-between mb-5">
               <h2 className="text-lg font-bold text-slate-900">
-                "Tambah Transaksi Penjualan"
+                Tambah Transaksi Penjualan
               </h2>
               <button
                 onClick={salesLogic.closeModal}
@@ -323,7 +395,6 @@ export default function TransactionPage() {
             <form onSubmit={salesLogic.handleSave} className="space-y-4">
               {/* --- BAGIAN 1: DATA PEMBELI & TRANSAKSI --- */}
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                {/* Kode Penjualan */}
                 <div className="md:col-span-2">
                   <label className="mb-1 block text-sm font-medium text-slate-700">
                     Kode Penjualan
@@ -336,8 +407,6 @@ export default function TransactionPage() {
                     value={salesLogic.formData.kode_penjualan}
                   />
                 </div>
-
-                {/* Nama Pembeli */}
                 <div>
                   <label className="mb-1 block text-sm font-medium text-slate-700">
                     Nama Pembeli
@@ -356,8 +425,6 @@ export default function TransactionPage() {
                     }
                   />
                 </div>
-
-                {/* No HP Pembeli */}
                 <div>
                   <label className="mb-1 block text-sm font-medium text-slate-700">
                     No HP Pembeli
@@ -388,7 +455,6 @@ export default function TransactionPage() {
                 <div className="space-y-3">
                   {salesLogic.formData.detail_produk.map((item, index) => (
                     <div key={index} className="flex gap-2 items-start">
-                      {/* Dropdown Pilih Produk */}
                       <div className="flex-1">
                         <select
                           required
@@ -399,7 +465,7 @@ export default function TransactionPage() {
                               ...salesLogic.formData.detail_produk,
                             ];
                             newDetails[index].id_produk = Number(
-                              e.target.value
+                              e.target.value,
                             );
                             salesLogic.setFormData({
                               ...salesLogic.formData,
@@ -416,7 +482,6 @@ export default function TransactionPage() {
                         </select>
                       </div>
 
-                      {/* Input Jumlah */}
                       <div className="w-24">
                         <input
                           type="number"
@@ -429,7 +494,7 @@ export default function TransactionPage() {
                             const newDetails = [
                               ...salesLogic.formData.detail_produk,
                             ];
-                            newDetails[index].jumlah = number(e.target.value);
+                            newDetails[index].jumlah = Number(e.target.value);
                             salesLogic.setFormData({
                               ...salesLogic.formData,
                               detail_produk: newDetails,
@@ -438,14 +503,13 @@ export default function TransactionPage() {
                         />
                       </div>
 
-                      {/* Tombol Hapus Baris (Opsional) */}
                       {salesLogic.formData.detail_produk.length > 1 && (
                         <button
                           type="button"
                           onClick={() => {
                             const newDetails =
                               salesLogic.formData.detail_produk.filter(
-                                (_, i) => i !== index
+                                (_, i) => i !== index,
                               );
                             salesLogic.setFormData({
                               ...salesLogic.formData,
@@ -461,7 +525,6 @@ export default function TransactionPage() {
                   ))}
                 </div>
 
-                {/* Tombol Tambah Produk Lain */}
                 <button
                   type="button"
                   onClick={() => {
@@ -469,7 +532,7 @@ export default function TransactionPage() {
                       ...salesLogic.formData,
                       detail_produk: [
                         ...salesLogic.formData.detail_produk,
-                        { id_produk: 0, jumlah: 1 }, // Default object baru
+                        { id_produk: 0, jumlah: 1 },
                       ],
                     });
                   }}
@@ -479,7 +542,6 @@ export default function TransactionPage() {
                 </button>
               </div>
 
-              {/* --- TOMBOL AKSI --- */}
               <div className="pt-4 flex gap-3">
                 <button
                   type="button"
@@ -505,7 +567,6 @@ export default function TransactionPage() {
       {salesLogic.isDetailModalOpen && salesLogic.selectedTransaction && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in duration-200">
           <div className="w-full max-w-lg rounded-2xl bg-white shadow-2xl overflow-hidden">
-            {/* Header Modal */}
             <div className="bg-slate-50 border-b border-slate-200 px-6 py-4 flex justify-between items-center">
               <div>
                 <h3 className="font-bold text-lg text-slate-800">
@@ -523,9 +584,7 @@ export default function TransactionPage() {
               </button>
             </div>
 
-            {/* Body Modal (Info Pembeli & List Produk) */}
             <div className="p-6 max-h-[70vh] overflow-y-auto">
-              {/* Info Pembeli */}
               <div className="grid grid-cols-2 gap-4 mb-6 bg-blue-50 p-4 rounded-xl border border-blue-100">
                 <div>
                   <label className="text-xs text-blue-600 font-semibold uppercase">
@@ -541,7 +600,8 @@ export default function TransactionPage() {
                   </label>
                   <div className="font-medium text-slate-800">
                     {new Date(
-                      salesLogic.selectedTransaction.tgl_transaksi || Date.now()
+                      salesLogic.selectedTransaction.tgl_transaksi ||
+                        Date.now(),
                     ).toLocaleDateString("id-ID", {
                       day: "numeric",
                       month: "long",
@@ -553,7 +613,6 @@ export default function TransactionPage() {
                 </div>
               </div>
 
-              {/* Tabel Detail Produk */}
               <h4 className="text-sm font-semibold text-slate-700 mb-3">
                 Rincian Barang
               </h4>
@@ -572,7 +631,7 @@ export default function TransactionPage() {
                     {salesLogic.selectedTransaction.detail_produk.map(
                       (detail, idx) => {
                         const produk = productLogic.products.find(
-                          (p) => p.id_produk === detail.id_produk
+                          (p) => p.id_produk === detail.id_produk,
                         );
                         const harga = produk ? Number(produk.harga) : 0;
                         const subtotal = harga * detail.jumlah;
@@ -595,10 +654,9 @@ export default function TransactionPage() {
                             </td>
                           </tr>
                         );
-                      }
+                      },
                     )}
                   </tbody>
-                  {/* Grand Total Footer */}
                   <tfoot className="bg-slate-50 border-t border-slate-200">
                     <tr>
                       <td
@@ -612,14 +670,14 @@ export default function TransactionPage() {
                           salesLogic.selectedTransaction.detail_produk.reduce(
                             (acc, detail) => {
                               const p = productLogic.products.find(
-                                (i) => i.id_produk === detail.id_produk
+                                (i) => i.id_produk === detail.id_produk,
                               );
                               return (
                                 acc + (p ? Number(p.harga) : 0) * detail.jumlah
                               );
                             },
-                            0
-                          )
+                            0,
+                          ),
                         )}
                       </td>
                     </tr>
@@ -628,7 +686,6 @@ export default function TransactionPage() {
               </div>
             </div>
 
-            {/* Footer Modal Action */}
             <div className="p-4 border-t border-slate-100 bg-slate-50 text-right">
               <button
                 onClick={salesLogic.closeDetailModal}
@@ -643,11 +700,8 @@ export default function TransactionPage() {
 
       {/* --- MODAL PEMBELIAN --- */}
       {purchaseLogic.isModalOpen && (
-        // 👇 1. INI WRAPPER YANG HILANG (Backdrop Gelap)
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-          {/* 👇 2. INI CONTAINER FORM KAMU (Tetap sama, cuma tambah w-full) */}
           <div className="w-full max-w-2xl bg-white shadow-2xl rounded-2xl overflow-hidden max-h-[90vh] overflow-y-auto">
-            {/* Header Modal */}
             <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
               <h2 className="text-2xl font-bold text-slate-800">
                 Form Pembelian
@@ -661,7 +715,6 @@ export default function TransactionPage() {
             </div>
 
             <div className="p-6">
-              {/* --- TOGGLE SWITCH --- */}
               <div className="flex bg-gray-100 p-1 rounded-lg mb-6">
                 <button
                   type="button"
@@ -695,7 +748,6 @@ export default function TransactionPage() {
                       : "Detail Produk Baru"}
                   </h3>
                   {purchaseLogic.isRestock ? (
-                    // Restok barang
                     <div>
                       <label className="block text-sm font-medium mb-1">
                         Pilih Produk
@@ -708,7 +760,6 @@ export default function TransactionPage() {
                         required={purchaseLogic.isRestock}
                       >
                         <option value="">-- Pilih Barang --</option>
-                        {/* Map dari get produk */}
                         {productLogic.products.map((prod) => (
                           <option key={prod.id_produk} value={prod.id_produk}>
                             {prod.nama_produk} ({prod.kode_kategori}) -{" "}
@@ -718,9 +769,8 @@ export default function TransactionPage() {
                       </select>
                     </div>
                   ) : (
-                    // Tambah produk baru lewat pembelian
                     <div className="space-y-4">
-                      {/* 🔥 1. WIDGET AI PREDICTION (Baru) 🔥 */}
+                      {/* 🔥 WIDGET AI PREDICTION 🔥 */}
                       <div className="bg-indigo-50 border border-indigo-200 rounded-xl p-4 transition-all">
                         <div className="flex justify-between items-center mb-3">
                           <h4 className="text-sm font-bold text-indigo-800 flex items-center gap-2">
@@ -733,7 +783,7 @@ export default function TransactionPage() {
                             type="button"
                             onClick={() =>
                               purchaseLogic.setShowPrediction(
-                                !purchaseLogic.showPrediction
+                                !purchaseLogic.showPrediction,
                               )
                             }
                             className="text-xs text-indigo-600 font-semibold hover:text-indigo-800 underline decoration-dotted"
@@ -744,11 +794,9 @@ export default function TransactionPage() {
                           </button>
                         </div>
 
-                        {/* Form Prediksi (Toggle) */}
                         {purchaseLogic.showPrediction && (
                           <div className="animate-in fade-in slide-in-from-top-2 duration-300">
                             <div className="grid grid-cols-2 gap-3 mb-3">
-                              {/* Input Carat */}
                               <div>
                                 <label className="text-xs font-semibold text-indigo-600">
                                   Carat (Berat)
@@ -762,7 +810,6 @@ export default function TransactionPage() {
                                   className="w-full border border-indigo-200 rounded p-1.5 text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
                                 />
                               </div>
-                              {/* Select Cut */}
                               <div>
                                 <label className="text-xs font-semibold text-indigo-600">
                                   Cut
@@ -780,7 +827,6 @@ export default function TransactionPage() {
                                   <option value="5">5 - Ideal</option>
                                 </select>
                               </div>
-                              {/* Select Color */}
                               <div>
                                 <label className="text-xs font-semibold text-indigo-600">
                                   Color
@@ -802,7 +848,6 @@ export default function TransactionPage() {
                                   </option>
                                 </select>
                               </div>
-                              {/* Select Clarity */}
                               <div>
                                 <label className="text-xs font-semibold text-indigo-600">
                                   Clarity
@@ -836,7 +881,6 @@ export default function TransactionPage() {
                                 : "⚡ Hitung Estimasi Harga"}
                             </button>
 
-                            {/* Hasil Prediksi */}
                             {purchaseLogic.predictedPrice !== null && (
                               <div className="mt-3 bg-white p-3 rounded-lg border border-indigo-100 text-center shadow-sm">
                                 <div className="text-xs text-slate-500 uppercase tracking-wide">
@@ -858,7 +902,6 @@ export default function TransactionPage() {
                         )}
                       </div>
 
-                      {/* 2. FORM INPUT BARANG BARU (Original) */}
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="col-span-2">
                           <label className="block text-sm font-medium mb-1">
@@ -982,135 +1025,6 @@ export default function TransactionPage() {
                   {purchaseLogic.loading ? "Menyimpan..." : "Simpan Pembelian"}
                 </button>
               </form>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* --- MODAL DETAIL PEMBELIAN --- */}
-      {purchaseLogic.isDetailModalOpen && purchaseLogic.selectedTransaction && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-          <div className="w-full max-w-lg rounded-2xl bg-white shadow-2xl overflow-hidden">
-            {/* 1. Header Modal */}
-            <div className="bg-slate-50 border-b border-slate-200 px-6 py-4 flex justify-between items-center">
-              <div>
-                <h3 className="font-bold text-lg text-slate-800">
-                  Detail Pembelian
-                </h3>
-                <p className="text-sm text-slate-500 font-mono">
-                  #{purchaseLogic.selectedTransaction.kode_pembelian}
-                </p>
-              </div>
-              <button
-                onClick={purchaseLogic.closeDetailModal}
-                className="p-2 bg-white border border-slate-200 rounded-full hover:bg-slate-100 text-slate-500"
-              >
-                <X size={20} />
-              </button>
-            </div>
-
-            {/* 2. Body Modal */}
-            <div className="p-6 max-h-[70vh] overflow-y-auto">
-              {/* Info Supplier/Penjual */}
-              <div className="grid grid-cols-2 gap-4 mb-6 bg-blue-50 p-4 rounded-xl border border-blue-100">
-                <div>
-                  <label className="text-xs text-blue-600 font-semibold uppercase">
-                    Supplier / Penjual
-                  </label>
-                  <div className="font-medium text-slate-800">
-                    {purchaseLogic.selectedTransaction.nama_penjual || "-"}
-                  </div>
-                </div>
-                <div className="text-right">
-                  <label className="text-xs text-blue-600 font-semibold uppercase">
-                    Tanggal Transaksi
-                  </label>
-                  <div className="font-medium text-slate-800">
-                    {new Date(
-                      purchaseLogic.selectedTransaction.tgl_transaksi ||
-                        Date.now()
-                    ).toLocaleDateString("id-ID", {
-                      day: "numeric",
-                      month: "long",
-                      year: "numeric",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </div>
-                </div>
-              </div>
-
-              {/* Tabel Detail Produk */}
-              <h4 className="text-sm font-semibold text-slate-700 mb-3">
-                Rincian Barang Masuk
-              </h4>
-              <div className="border rounded-lg overflow-hidden">
-                <table className="w-full text-sm text-left">
-                  <thead className="bg-slate-50 text-slate-500">
-                    <tr>
-                      <th className="px-4 py-2 font-medium">Produk</th>
-                      <th className="px-4 py-2 font-medium text-center">Qty</th>
-                      <th className="px-4 py-2 font-medium text-right">
-                        Total Harga
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100">
-                    {/* Karena JSON kamu produknya cuma satu (object), tidak perlu .map() */}
-                    <tr>
-                      <td className="px-4 py-2">
-                        <div className="font-medium text-slate-800">
-                          {purchaseLogic.selectedTransaction.produk
-                            ?.nama_produk || "Produk Tidak Dikenal"}
-                        </div>
-                        <div className="text-xs text-slate-500">
-                          {/* Asumsi harga di JSON adalah harga satuan */}@{" "}
-                          {rupiah(
-                            purchaseLogic.selectedTransaction.produk?.harga || 0
-                          )}
-                        </div>
-                      </td>
-                      <td className="px-4 py-2 text-center text-slate-600">
-                        {purchaseLogic.selectedTransaction.jumlah}
-                      </td>
-                      <td className="px-4 py-2 text-right font-medium text-slate-800">
-                        {rupiah(
-                          (purchaseLogic.selectedTransaction.harga_beli ||
-                            0) * purchaseLogic.selectedTransaction.jumlah
-                        )}
-                      </td>
-                    </tr>
-                  </tbody>
-
-                  {/* Grand Total Footer */}
-                  <tfoot className="bg-slate-50 border-t border-slate-200">
-                    <tr>
-                      <td
-                        colSpan="2"
-                        className="px-4 py-3 font-bold text-slate-700 text-right"
-                      >
-                        Total Bayar
-                      </td>
-                      <td className="px-4 py-3 font-bold text-blue-600 text-right text-lg">
-                        {rupiah(
-                          (purchaseLogic.selectedTransaction.harga_beli ||
-                            0) * purchaseLogic.selectedTransaction.jumlah
-                        )}
-                      </td>
-                    </tr>
-                  </tfoot>
-                </table>
-              </div>
-            </div>
-
-            {/* 3. Footer Modal Action */}
-            <div className="p-4 border-t border-slate-100 bg-slate-50 text-right">
-              <button
-                onClick={purchaseLogic.closeDetailModal}
-                className="px-6 py-2 bg-white border border-slate-300 text-slate-700 font-semibold rounded-lg hover:bg-slate-100"
-              >
-                Tutup
-              </button>
             </div>
           </div>
         </div>
