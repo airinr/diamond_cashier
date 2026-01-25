@@ -3,7 +3,8 @@ import LandingPage from "./pages/LandingPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import DashboardPage from "./pages/admin/DashboardPage";
-import ProductPage from "./pages/admin/ProductPage"; // Import halaman baru
+import ProductPage from "./pages/admin/ProductPage";
+import TransactionPage from "./pages/admin/TransactionPage";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
         {/* Halaman Admin */}
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/products" element={<ProductPage />} />
+        <Route path="/transactions" element={<TransactionPage />} />
         {/* Tambahkan route lain nanti di sini (transaksi, user, dll) */}
       </Routes>
     </BrowserRouter>

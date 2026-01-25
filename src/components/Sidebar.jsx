@@ -22,7 +22,7 @@ const Sidebar = ({ active = "dashboard", onLogout }) => {
       key: "transaction",
       label: "Transaksi",
       icon: Receipt,
-      path: "/admin/transactions", // disiapkan
+      path: "/transactions", // disiapkan
     },
     {
       key: "user",

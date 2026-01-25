@@ -21,7 +21,7 @@ export default function ProductsPage() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <Sidebar active="products" />
+      <Sidebar active="product" />
 
       <div className="ml-52 min-h-screen">
         {/* Topbar */}
