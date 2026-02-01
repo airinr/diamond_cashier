@@ -35,11 +35,7 @@ export default function TransactionPage() {
               </p>
             </div>
 
-            {/* 2. GROUP TOMBOL AKSI DISINI 👇 */}
             <div className="flex items-center gap-2">
-              {/* ========================================= */}
-              {/* BAGIAN EXPORT UNTUK PEMBELIAN (!isJual)   */}
-              {/* ========================================= */}
               {!isJual && (
                 <>
                   <div className="flex flex-col items-start mr-2">
@@ -80,9 +76,6 @@ export default function TransactionPage() {
                 </>
               )}
 
-              {/* ========================================= */}
-              {/* BAGIAN EXPORT UNTUK PENJUALAN (isJual)    */}
-              {/* ========================================= */}
               {isJual && (
                 <>
                   <div className="flex flex-col items-start mr-2">
@@ -1025,6 +1018,135 @@ export default function TransactionPage() {
                   {purchaseLogic.loading ? "Menyimpan..." : "Simpan Pembelian"}
                 </button>
               </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* --- MODAL DETAIL PEMBELIAN --- */}
+      {purchaseLogic.isDetailModalOpen && purchaseLogic.selectedTransaction && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+          <div className="w-full max-w-lg rounded-2xl bg-white shadow-2xl overflow-hidden">
+            {/* 1. Header Modal */}
+            <div className="bg-slate-50 border-b border-slate-200 px-6 py-4 flex justify-between items-center">
+              <div>
+                <h3 className="font-bold text-lg text-slate-800">
+                  Detail Pembelian
+                </h3>
+                <p className="text-sm text-slate-500 font-mono">
+                  #{purchaseLogic.selectedTransaction.kode_pembelian}
+                </p>
+              </div>
+              <button
+                onClick={purchaseLogic.closeDetailModal}
+                className="p-2 bg-white border border-slate-200 rounded-full hover:bg-slate-100 text-slate-500"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            {/* 2. Body Modal */}
+            <div className="p-6 max-h-[70vh] overflow-y-auto">
+              {/* Info Supplier/Penjual */}
+              <div className="grid grid-cols-2 gap-4 mb-6 bg-blue-50 p-4 rounded-xl border border-blue-100">
+                <div>
+                  <label className="text-xs text-blue-600 font-semibold uppercase">
+                    Supplier / Penjual
+                  </label>
+                  <div className="font-medium text-slate-800">
+                    {purchaseLogic.selectedTransaction.nama_penjual || "-"}
+                  </div>
+                </div>
+                <div className="text-right">
+                  <label className="text-xs text-blue-600 font-semibold uppercase">
+                    Tanggal Transaksi
+                  </label>
+                  <div className="font-medium text-slate-800">
+                    {new Date(
+                      purchaseLogic.selectedTransaction.tgl_transaksi ||
+                        Date.now()
+                    ).toLocaleDateString("id-ID", {
+                      day: "numeric",
+                      month: "long",
+                      year: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </div>
+                </div>
+              </div>
+
+              {/* Tabel Detail Produk */}
+              <h4 className="text-sm font-semibold text-slate-700 mb-3">
+                Rincian Barang Masuk
+              </h4>
+              <div className="border rounded-lg overflow-hidden">
+                <table className="w-full text-sm text-left">
+                  <thead className="bg-slate-50 text-slate-500">
+                    <tr>
+                      <th className="px-4 py-2 font-medium">Produk</th>
+                      <th className="px-4 py-2 font-medium text-center">Qty</th>
+                      <th className="px-4 py-2 font-medium text-right">
+                        Total Harga
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {/* Karena JSON kamu produknya cuma satu (object), tidak perlu .map() */}
+                    <tr>
+                      <td className="px-4 py-2">
+                        <div className="font-medium text-slate-800">
+                          {purchaseLogic.selectedTransaction.produk
+                            ?.nama_produk || "Produk Tidak Dikenal"}
+                        </div>
+                        <div className="text-xs text-slate-500">
+                          {/* Asumsi harga di JSON adalah harga satuan */}@{" "}
+                          {rupiah(
+                            purchaseLogic.selectedTransaction.produk?.harga || 0
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-4 py-2 text-center text-slate-600">
+                        {purchaseLogic.selectedTransaction.jumlah}
+                      </td>
+                      <td className="px-4 py-2 text-right font-medium text-slate-800">
+                        {rupiah(
+                          (purchaseLogic.selectedTransaction.harga_beli ||
+                            0) * purchaseLogic.selectedTransaction.jumlah
+                        )}
+                      </td>
+                    </tr>
+                  </tbody>
+
+                  {/* Grand Total Footer */}
+                  <tfoot className="bg-slate-50 border-t border-slate-200">
+                    <tr>
+                      <td
+                        colSpan="2"
+                        className="px-4 py-3 font-bold text-slate-700 text-right"
+                      >
+                        Total Bayar
+                      </td>
+                      <td className="px-4 py-3 font-bold text-blue-600 text-right text-lg">
+                        {rupiah(
+                          (purchaseLogic.selectedTransaction.harga_beli ||
+                            0) * purchaseLogic.selectedTransaction.jumlah
+                        )}
+                      </td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </div>
+
+            {/* 3. Footer Modal Action */}
+            <div className="p-4 border-t border-slate-100 bg-slate-50 text-right">
+              <button
+                onClick={purchaseLogic.closeDetailModal}
+                className="px-6 py-2 bg-white border border-slate-300 text-slate-700 font-semibold rounded-lg hover:bg-slate-100"
+              >
+                Tutup
+              </button>
             </div>
           </div>
         </div>

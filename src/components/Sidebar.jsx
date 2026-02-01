@@ -40,12 +40,6 @@ const Sidebar = ({ active = "dashboard" }) => {
       icon: Receipt,
       path: "/transactions",
     },
-    {
-      key: "user",
-      label: "User",
-      icon: Users,
-      path: "/admin/users",
-    },
   ];
 
   return (

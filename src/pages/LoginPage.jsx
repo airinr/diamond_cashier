@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Gem, Mail, Lock, Loader2, ArrowLeft } from "lucide-react";
+import { Gem, Mail, Lock, Loader2, ArrowLeft, User } from "lucide-react";
 import { useNavigate } from "react-router-dom"; // ✅ 1. Import Hook Routing
 import { useAuthLogin } from "../hooks/useAuthLogin"; // Pastikan path ini benar
 
@@ -52,15 +52,15 @@ const LoginPage = () => {
         <form onSubmit={handleLogin} className="space-y-6">
           <div className="space-y-2">
             <label className="text-sm font-medium text-slate-300">
-              Email Address
+              Username
             </label>
             <div className="relative">
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+              <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
               <input
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                placeholder="admin@diamond.com"
+                placeholder="Admin"
                 className="w-full bg-slate-950 border border-slate-700 text-white rounded-lg py-3 pl-10 pr-4 focus:outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition placeholder-slate-600 disabled:opacity-70"
                 required
                 disabled={isLoading}
