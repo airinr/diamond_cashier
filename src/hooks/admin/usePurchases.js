@@ -147,7 +147,7 @@ export const usePurchases = () => {
     if (predictedPrice) {
       setFormData((prev) => ({
         ...prev,
-        harga_jual_baru: predictedPrice, // Masuk ke rencana harga jual
+        harga_beli: predictedPrice, // Masuk ke rencana harga jual
         // Atau kalau mau masuk ke harga_beli, tinggal ganti key-nya
       }));
       setShowPrediction(false); // Tutup menu prediksi

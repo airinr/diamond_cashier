@@ -131,7 +131,7 @@ const RegisterPage = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 className="w-full bg-slate-950 border border-slate-700 text-white rounded-lg py-3 pl-10 pr-4 focus:outline-none focus:border-yellow-500 transition"
-                placeholder="Password kuat"
+                placeholder="Password"
               />
             </div>
           </div>

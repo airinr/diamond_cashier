@@ -767,10 +767,7 @@ export default function TransactionPage() {
                       <div className="bg-indigo-50 border border-indigo-200 rounded-xl p-4 transition-all">
                         <div className="flex justify-between items-center mb-3">
                           <h4 className="text-sm font-bold text-indigo-800 flex items-center gap-2">
-                            🔮 AI Price Estimator
-                            <span className="text-[10px] bg-indigo-600 text-white px-2 py-0.5 rounded-full">
-                              BETA
-                            </span>
+                            AI Price Estimator
                           </h4>
                           <button
                             type="button"
@@ -871,7 +868,7 @@ export default function TransactionPage() {
                             >
                               {purchaseLogic.loadingPrediction
                                 ? "Menghitung..."
-                                : "⚡ Hitung Estimasi Harga"}
+                                : "Hitung Estimasi Harga"}
                             </button>
 
                             {purchaseLogic.predictedPrice !== null && (
@@ -931,12 +928,7 @@ export default function TransactionPage() {
                             name="harga_jual_baru"
                             value={purchaseLogic.formData.harga_jual_baru}
                             onChange={purchaseLogic.handleChange}
-                            className={`w-full border rounded p-2 focus:ring-blue-500 focus:border-blue-500 transition ${
-                              purchaseLogic.predictedPrice ===
-                              purchaseLogic.formData.harga_jual_baru
-                                ? "border-green-400 bg-green-50"
-                                : ""
-                            }`}
+                            className="w-full border rounded p-2"
                             placeholder="Rp 0"
                             required={!purchaseLogic.isRestock}
                           />
@@ -970,7 +962,12 @@ export default function TransactionPage() {
                       name="harga_beli"
                       value={purchaseLogic.formData.harga_beli}
                       onChange={purchaseLogic.handleChange}
-                      className="w-full border rounded p-2"
+                      className={`w-full border rounded p-2 focus:ring-blue-500 focus:border-blue-500 transition ${
+                        purchaseLogic.predictedPrice ===
+                        purchaseLogic.formData.harga_beli
+                          ? "border-green-400 bg-green-50"
+                          : ""
+                      }`}
                       required
                     />
                   </div>
@@ -1064,7 +1061,7 @@ export default function TransactionPage() {
                   <div className="font-medium text-slate-800">
                     {new Date(
                       purchaseLogic.selectedTransaction.tgl_transaksi ||
-                        Date.now()
+                        Date.now(),
                     ).toLocaleDateString("id-ID", {
                       day: "numeric",
                       month: "long",
@@ -1102,7 +1099,8 @@ export default function TransactionPage() {
                         <div className="text-xs text-slate-500">
                           {/* Asumsi harga di JSON adalah harga satuan */}@{" "}
                           {rupiah(
-                            purchaseLogic.selectedTransaction.produk?.harga || 0
+                            purchaseLogic.selectedTransaction.produk?.harga ||
+                              0,
                           )}
                         </div>
                       </td>
@@ -1111,8 +1109,8 @@ export default function TransactionPage() {
                       </td>
                       <td className="px-4 py-2 text-right font-medium text-slate-800">
                         {rupiah(
-                          (purchaseLogic.selectedTransaction.harga_beli ||
-                            0) * purchaseLogic.selectedTransaction.jumlah
+                          (purchaseLogic.selectedTransaction.harga_beli || 0) *
+                            purchaseLogic.selectedTransaction.jumlah,
                         )}
                       </td>
                     </tr>
@@ -1129,8 +1127,8 @@ export default function TransactionPage() {
                       </td>
                       <td className="px-4 py-3 font-bold text-blue-600 text-right text-lg">
                         {rupiah(
-                          (purchaseLogic.selectedTransaction.harga_beli ||
-                            0) * purchaseLogic.selectedTransaction.jumlah
+                          (purchaseLogic.selectedTransaction.harga_beli || 0) *
+                            purchaseLogic.selectedTransaction.jumlah,
                         )}
                       </td>
                     </tr>
